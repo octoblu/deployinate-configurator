@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+- '0.10'
+sudo: false
+deploy:
+  provider: npm
+  skip_cleanup: true
+  clean_up: false
+  email: serveradmin@octoblu.com
+  api_key:
+    secure: Sy9lbYIR73VbRCNjxipRs9z799WtNE79aHtMCM4+zBeLFHbMj9Ecv/62VCbVCyBzwy5qJlQNhxzg1FWjZtDTEMPA2z/GEdJGeQNfMrJDaneTo33AMo7FR7w11lW8KZLgGGXLi5tl0toCr800QJuw+UFdz1zkSAvA7iPYtk4m77hSzbvQ48wa4S5oGC0YTNhEl/88jgWDMCjyZ20ErZ2uljmxacWK4lIokApOJZuioaCqeF90IbMYZkcSXKdluiGbtkx8scFNZexUm4cSP4DabDgQEtKafYF2CEjRINbPz8tR/xDaSvPT0xsOQads8pL2APjg/U73xeWgj3xEv9GwYS+DQXCcNRgTeqd9pDCEsnz2b5DJCpUlS+9+6Bmq1Pa2aH+0SyZKmRnxwIgb53lLw19/MrGPAJJfGCjuuPpb2eyHQZOtn7fIXPQcf7y566MSCNUy70bIX2RH7MkGydPYEOvi/tDpvKFuzD5uhZOt+cBffAhiXDlSGzmgTPRbP8N2Z79PU3z3FwIeY7M9usA26rWqorKrXfrP7+CIa7yla94tS8WrsU31ZKIPJofuJo/UcmHMQ2uvSX92tuD1ycxWrgFds4qay9N1sYVvl4L+XuBH9bdrKwcnC1aGtaOh8mhBKjs2z0eqhsW6xKuWVBjENN7z/YwXvRMbOb2zPn1bMgU=
+  on:
+    tags: true
+    all_branches: true

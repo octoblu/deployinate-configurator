@@ -26,11 +26,11 @@ class DeployinateConfigurator
     console.log "making directory", colors.yellow @dir
     fs.mkdirpSync @dir
 
-    glob 'templates/**/*.eco', (error, files) =>
+    glob path.join(__dirname, 'templates/**/*.eco'), (error, files) =>
       return @die error if error?
       _.each files, (file) =>
         outputFilename = path.basename file
-        template = fs.readFileSync path.join(__dirname, file), "utf-8"
+        template = fs.readFileSync file, "utf-8"
         _.each ['blue', 'green'], (color) =>
           filename = "#{@namespace}-#{@project_name}-#{color}#{outputFilename}"
           console.log "Writing file", colors[color] filename
