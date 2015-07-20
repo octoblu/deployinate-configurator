@@ -1,0 +1,24 @@
+[Unit]
+Description=Register with vulcand for <%= @namespace %>-<%= @project_name %>-<%= @color %>
+BindsTo=<%= @namespace %>-<%= @project_name %>-<%= @color %>@%i.service
+After=<%= @namespace %>-<%= @project_name %>-<%= @color %>@%i.service
+
+[Service]
+EnvironmentFile=/etc/environment
+RemainAfterExit=yes
+ExecStart=/bin/sh -c "/usr/bin/echo 'Adding backend, server, and frontend to vulcand' && \
+  /usr/bin/docker run --rm octoblu/vctl backend upsert \
+    --id <%= @namespace %>-<%= @project_name %>-<%= @color %> \
+    --vulcan http://$(/usr/bin/etcdctl get /vulcand/host):8182 && \
+  /usr/bin/docker run --rm octoblu/vctl server upsert \
+    --id <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i \
+    --backend <%= @namespace %>-<%= @project_name %>-<%= @color %> \
+    --url http://${COREOS_PUBLIC_IPV4}:$(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/<%= @color %>/port) \
+    --vulcan http://$(/usr/bin/etcdctl get /vulcand/host):8182 \
+"
+
+ExecStop=/bin/sh -c "/usr/bin/echo 'Removing server from vulcand' && \
+  /usr/bin/docker run --rm octoblu/vctl server rm --id <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i --vulcan http://$(/usr/bin/etcdctl get /vulcand/host):8182"
+
+[X-Fleet]
+X-ConditionMachineOf=<%= @namespace %>-<%= @project_name %>-<%= @color %>@%i.service
