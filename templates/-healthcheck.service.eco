@@ -14,7 +14,7 @@ ExecStart=/bin/sh -c "/usr/bin/echo 'Checking backends before switching vulcand'
   /usr/bin/docker run --rm octoblu/vctl frontend upsert \
     --id <%= @namespace %>-<%= @project_name %> \
     --backend <%= @namespace %>-<%= @project_name %>-<%= @color %> \
-    --route \"Host(\\\"$(etcdctl get /<%= @namespace %>/<%= @project_name %>/host)\\\")\" \
+    --route \"Host(\\\"$(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/host)\\\")\" \
     --vulcan http://$(/usr/bin/etcdctl get /vulcand/host):8182 && \
   /usr/bin/etcdctl set /<%= @namespace %>/<%= @project_name %>/active <%= @color %> \
 "
