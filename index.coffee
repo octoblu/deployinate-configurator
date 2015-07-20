@@ -29,7 +29,7 @@ class DeployinateConfigurator
     glob path.join(__dirname, 'templates/**/*.eco'), (error, files) =>
       return @die error if error?
       _.each files, (file) =>
-        outputFilename = path.basename file
+        outputFilename = path.basename file.replace('.eco', '')
         template = fs.readFileSync file, "utf-8"
         _.each ['blue', 'green'], (color) =>
           filename = "#{@namespace}-#{@project_name}-#{color}#{outputFilename}"
@@ -49,6 +49,10 @@ class DeployinateConfigurator
     console.log colors.bgWhite colors.black "ETCD INSTRUCTIONS"
     console.log ""
     console.log "etcdctl set /#{@namespace}/#{@project_name}/count 2"
+    console.log ""
+    console.log colors.bgRed colors.white "DON'T FORGET: SUBMIT YOUR SERVICE FILES TO FLEET"
+    console.log ""
+    console.log "fleetctrl submit #{@dir}/*.service"
     console.log ""
 
   die: (error) =>
