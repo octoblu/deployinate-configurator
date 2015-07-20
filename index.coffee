@@ -52,7 +52,7 @@ class DeployinateConfigurator
     console.log ""
     console.log colors.bgRed colors.white "DON'T FORGET: SUBMIT YOUR SERVICE FILES TO FLEET"
     console.log ""
-    console.log "fleetctrl submit #{@dir}/*.service"
+    console.log "fleetctl submit #{@dir}/*.service"
     console.log ""
 
   die: (error) =>
