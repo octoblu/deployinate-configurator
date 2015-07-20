@@ -49,6 +49,7 @@ class DeployinateConfigurator
     console.log colors.bgWhite colors.black "ETCD INSTRUCTIONS"
     console.log ""
     console.log "etcdctl set /#{@namespace}/#{@project_name}/count 2"
+    console.log "etcdctl set /#{@namespace}/#{@project_name}/host <domain name>"
     console.log ""
     console.log colors.bgRed colors.white "DON'T FORGET: SUBMIT YOUR SERVICE FILES TO FLEET"
     console.log ""

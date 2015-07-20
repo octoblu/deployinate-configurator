@@ -19,10 +19,10 @@ ExecStartPre=-/usr/bin/docker rm <%= @namespace %>-<%= @project_name %>-<%= @col
 ExecStart=/bin/sh -c "/usr/bin/docker run --rm \
   --name <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i \
   -e DEBUG=<%= @project_name %>* \
-  -e FLEETCTL_ENDPOINT=http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):2379 \
-  -p $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/<%= @color %>/port):80 \
   -e MESHBLU_HOST=$(/usr/bin/etcdctl get /meshblu/host) \
   -e MESHBLU_PORT=$(/usr/bin/etcdctl get /meshblu/port) \
+  -e MESHBLU_PROTOCOL=$(/usr/bin/etcdctl get /meshblu/protocol) \
+  -p $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/<%= @color %>/port):80 \
   $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/<%= @color %>/docker_url) \
 "
 
