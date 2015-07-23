@@ -1,7 +1,7 @@
 [Unit]
 Description=<%= @namespace %>-<%= @project_name %>-<%= @color %>
-After=docker.service
-Requires=docker.service
+Wants=vulcand.service
+After=vulcand.service
 
 [Service]
 TimeoutStartSec=300
