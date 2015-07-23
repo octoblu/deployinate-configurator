@@ -50,6 +50,7 @@ class DeployinateConfigurator
     console.log ""
     console.log "etcdctl set /#{@namespace}/#{@project_name}/count 2"
     console.log "etcdctl set /#{@namespace}/#{@project_name}/host <domain name>"
+    console.log "etcdctl set /#{@namespace}/#{@project_name}/healthcheck_mode <http/tcp>"
     console.log "etcdctl set /#{@namespace}/#{@project_name}/blue/port <port>"
     console.log "etcdctl set /#{@namespace}/#{@project_name}/green/port <port>"
     console.log ""
