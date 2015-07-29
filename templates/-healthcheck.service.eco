@@ -16,7 +16,7 @@ ExecStart=/bin/sh -c "/usr/bin/echo 'Checking backends before switching vulcand'
     --backend <%= @namespace %>-<%= @project_name %>-<%= @color %> \
     --route \"Host(\\\"$(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/host)\\\")\" \
     --trustForwardHeader \
-    --vulcan http://$(/usr/bin/etcdctl get /vulcand/host):8182 && \
+    --vulcan http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):8182 && \
   /usr/bin/etcdctl set /<%= @namespace %>/<%= @project_name %>/active <%= @color %> \
 "
 
