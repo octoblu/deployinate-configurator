@@ -13,6 +13,9 @@ ExecStartPre=/bin/sh -c '/usr/bin/docker login \
   quay.io'
 ExecStartPre=/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/<%= @color %>/port || /usr/bin/echo "etcd did not contain /<%= @namespace %>/<%= @project_name %>/<%= @color %>/port" && exit 1
 ExecStartPre=/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/<%= @color %>/docker_url || /usr/bin/echo "etcd did not contain /<%= @namespace %>/<%= @project_name %>/<%= @color %>/docker_url" && exit 1
+ExecStartPre=-/usr/bin/docker kill <%= @namespace %>-<%= @project_name %>-<%= @color %>-env-%i
+ExecStartPre=-/usr/bin/docker rm <%= @namespace %>-<%= @project_name %>-<%= @color %>-env-%i
+ExecStartPre=-/usr/bin/docker kill <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i
 ExecStartPre=-/usr/bin/docker rm <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i
 ExecStartPre=-/bin/sh -c "/usr/bin/docker run --rm \
   --name <%= @namespace %>-<%= @project_name %>-<%= @color %>-env-%i \
@@ -25,6 +28,7 @@ ExecStart=/bin/sh -c "/usr/bin/docker run --rm \
   -p $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/<%= @color %>/port):80 \
   $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/<%= @color %>/docker_url) \
 "
+ExecStop=/usr/bin/docker stop <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i
 
 [Install]
 WantedBy=multi-user.target
