@@ -17,7 +17,7 @@ ExecStartPre=-/usr/bin/docker kill <%= @namespace %>-<%= @project_name %>-<%= @c
 ExecStartPre=-/usr/bin/docker rm <%= @namespace %>-<%= @project_name %>-<%= @color %>-env-%i
 ExecStartPre=-/usr/bin/docker kill <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i
 ExecStartPre=-/usr/bin/docker rm <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i
-ExecStartPre=-/bin/sh -c "/usr/bin/docker run --rm \
+ExecStartPre=/bin/sh -c "/usr/bin/docker run --rm \
   --name <%= @namespace %>-<%= @project_name %>-<%= @color %>-env-%i \
   -e ETCDCTL_PEERS=http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):2379 \
   quay.io/octoblu/etcd-to-env /<%= @namespace %>/<%= @project_name %>/env > /tmp/<%= @namespace %>-<%= @project_name %>-<%= @color %>.env \
