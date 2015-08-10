@@ -4,6 +4,7 @@ BindsTo=<%= @namespace %>-<%= @project_name %>-<%= @color %>@%i.service
 After=<%= @namespace %>-<%= @project_name %>-<%= @color %>@%i.service
 
 [Service]
+TimeoutStartSec=300
 EnvironmentFile=/etc/environment
 RemainAfterExit=yes
 ExecStart=/bin/sh -c "/usr/bin/echo 'Adding backend, server, and frontend to vulcand' && \
