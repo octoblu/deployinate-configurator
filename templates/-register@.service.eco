@@ -20,7 +20,7 @@ ExecStart=/bin/sh -c "/usr/bin/docker run \
 
 ExecStop=-/usr/bin/docker kill <%= @namespace %>-<%= @project_name %>-<%= @color %>-register-%i
 ExecStop=/bin/sh -c "/usr/bin/echo 'Removing server from vulcand' && \
-  /usr/bin/docker run --rm octoblu/vctl server rm --backend <%= @namespace %>-<%= @project_name %> --id <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i --vulcan http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):8182"
+  /usr/bin/docker run --rm octoblu/vctl server rm --backend <%= @namespace %>-<%= @project_name %>-<%= @color %> --id <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i --vulcan http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):8182"
 
 [X-Fleet]
 X-ConditionMachineOf=<%= @namespace %>-<%= @project_name %>-<%= @color %>@%i.service
