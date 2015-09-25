@@ -7,19 +7,20 @@ After=<%= @namespace %>-<%= @project_name %>-<%= @color %>@%i.service
 TimeoutStartSec=300
 EnvironmentFile=/etc/environment
 RemainAfterExit=yes
-ExecStart=/bin/sh -c "/usr/bin/echo 'Adding backend, server, and frontend to vulcand' && \
-  /usr/bin/docker run --rm octoblu/vctl backend upsert \
-    --id <%= @namespace %>-<%= @project_name %>-<%= @color %> \
-    --vulcan http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):8182 && \
-  /usr/bin/docker run --rm octoblu/vctl server upsert \
-    --id <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i \
-    --backend <%= @namespace %>-<%= @project_name %>-<%= @color %> \
-    --url http://${COREOS_PRIVATE_IPV4}:$(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/<%= @color %>/port) \
-    --vulcan http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):8182 \
-"
+ExecStart=/bin/sh -c "/usr/bin/docker run \
+     --name <%= @namespace %>-<%= @project_name %>-<%= @color %>-register-%i \
+     --rm \
+     --net host \
+     --env URL=http://${COREOS_PRIVATE_IPV4}:$(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/<%= @color %>/port) \
+     --env BACKEND_ID=<%= @namespace %>-<%= @project_name %>-<%= @color %> \
+     --env SERVER_ID=<%= @namespace %>-<%= @project_name %>-<%= @color %>-%i \
+     --env VULCAN_URL=http://localhost:8182 \
+     --env TIMEOUT_SECS=5 \
+     octoblu/register-sidekick"
 
+ExecStop=-/usr/bin/docker kill <%= @namespace %>-<%= @project_name %>-<%= @color %>-register-%i
 ExecStop=/bin/sh -c "/usr/bin/echo 'Removing server from vulcand' && \
-  /usr/bin/docker run --rm octoblu/vctl server rm --backend <%= @namespace %>-<%= @project_name %> --id <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i --vulcan http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):8182"
+  /usr/bin/docker run --rm octoblu/vctl server rm --backend <%= @namespace %>-<%= @project_name %>-<%= @color %> --id <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i --vulcan http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):8182"
 
 [X-Fleet]
 X-ConditionMachineOf=<%= @namespace %>-<%= @project_name %>-<%= @color %>@%i.service
