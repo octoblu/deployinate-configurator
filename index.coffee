@@ -12,11 +12,17 @@ class DeployinateConfigurator
       .usage '[options] <project name>'
       .option '--namespace <namespace>', 'Namespace, defaults to octoblu'
       .option '-d, --dir <dir>', 'Output directory for templates, defaults to .systemd'
+      .option '--skip-healthcheck', 'Skip the healthcheck templates'
+      .option '--skip-register', 'Skip the register service templates'
+      .option '--skip-service', 'Skip the service templates'
       .parse process.argv
 
     @namespace = commander.namespace ? 'octoblu'
     @dir = commander.dir ? '.systemd'
     @project_name = _.first commander.args
+    @skipHealthcheck = commander.skipHealthcheck
+    @skipRegister = commander.skipRegister
+    @skipService = commander.skipService
 
   run: =>
     @parseOptions()
@@ -26,7 +32,12 @@ class DeployinateConfigurator
     console.log "making directory", colors.yellow @dir
     fs.mkdirpSync @dir
 
-    glob path.join(__dirname, 'templates/**/*.eco'), (error, files) =>
+    templateNames = ['some-dummy-filename']
+    templateNames.push '-healthcheck.service' unless @skipHealthcheck == true
+    templateNames.push '-register@.service' unless @skipRegister == true
+    templateNames.push '@.service' unless @skipService == true
+
+    glob path.join(__dirname, "templates/**/{#{templateNames.join(',')}}.eco"), (error, files) =>
       return @die error if error?
       _.each files, (file) =>
         outputFilename = path.basename file.replace('.eco', '')

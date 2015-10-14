@@ -1,12 +1,13 @@
 [Unit]
 Description=Register with vulcand for <%= @namespace %>-<%= @project_name %>-<%= @color %>
-BindsTo=<%= @namespace %>-<%= @project_name %>-<%= @color %>@%i.service
-After=<%= @namespace %>-<%= @project_name %>-<%= @color %>@%i.service
 
 [Service]
 TimeoutStartSec=300
 EnvironmentFile=/etc/environment
 RemainAfterExit=yes
+Restart=always
+ExecStartPre=-/usr/bin/docker kill <%= @namespace %>-<%= @project_name %>-<%= @color %>-register-%i
+ExecStartPre=-/usr/bin/docker rm <%= @namespace %>-<%= @project_name %>-<%= @color %>-register-%i
 ExecStart=/bin/sh -c "/usr/bin/docker run \
      --name <%= @namespace %>-<%= @project_name %>-<%= @color %>-register-%i \
      --rm \
@@ -16,7 +17,8 @@ ExecStart=/bin/sh -c "/usr/bin/docker run \
      --env SERVER_ID=<%= @namespace %>-<%= @project_name %>-<%= @color %>-%i \
      --env VULCAN_URL=http://localhost:8182 \
      --env TIMEOUT_SECS=5 \
-     octoblu/register-sidekick"
+     --env FRONTEND_TTL_SECS=11 \
+     $(/usr/bin/etcdctl get /image-versions/<%= @namespace %>/<%= @project_name %>/docker_url || echo 'octoblu/register-sidekick')
 
 ExecStop=-/usr/bin/docker kill <%= @namespace %>-<%= @project_name %>-<%= @color %>-register-%i
 ExecStop=/bin/sh -c "/usr/bin/echo 'Removing server from vulcand' && \
