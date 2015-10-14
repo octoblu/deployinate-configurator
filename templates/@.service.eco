@@ -25,6 +25,7 @@ ExecStartPre=/bin/sh -c "/usr/bin/docker run --rm \
 ExecStart=/bin/sh -c "/usr/bin/docker run --rm \
   --name <%= @namespace %>-<%= @project_name %>-<%= @color %>-%i \
   --env-file /tmp/<%= @namespace %>-<%= @project_name %>-<%= @color %>.env \
+  --memory 512m \
   -p $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/<%= @color %>/port):80 \
   $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/<%= @color %>/docker_url) \
 "
