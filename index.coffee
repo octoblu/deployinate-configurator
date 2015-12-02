@@ -12,16 +12,20 @@ class DeployinateConfigurator
       .usage '[options] <project name>'
       .option '--namespace <namespace>', 'Namespace, defaults to octoblu'
       .option '-d, --dir <dir>', 'Output directory for templates, defaults to .systemd'
+      .option '-p, --private', 'Private repo, use docker login'
       .option '--skip-healthcheck', 'Skip the healthcheck templates'
       .option '--skip-register', 'Skip the register service templates'
+      .option '--skip-sidekick', 'Skip the sidekick service templates'
       .option '--skip-service', 'Skip the service templates'
       .parse process.argv
 
     @namespace = commander.namespace ? 'octoblu'
     @dir = commander.dir ? '.systemd'
+    @private = commander.private?
     @project_name = _.first commander.args
     @skipHealthcheck = commander.skipHealthcheck
     @skipRegister = commander.skipRegister
+    @skipSidekick = commander.skipSidekick
     @skipService = commander.skipService
 
   run: =>
@@ -35,6 +39,7 @@ class DeployinateConfigurator
     templateNames = ['some-dummy-filename']
     templateNames.push '-healthcheck.service' unless @skipHealthcheck == true
     templateNames.push '-register@.service' unless @skipRegister == true
+    templateNames.push '-sidekick@.service' unless @skipSidekick == true
     templateNames.push '@.service' unless @skipService == true
 
     glob path.join(__dirname, "templates/**/{#{templateNames.join(',')}}.eco"), (error, files) =>
@@ -48,6 +53,7 @@ class DeployinateConfigurator
           contents = eco.render template,
             project_name: @project_name
             namespace: @namespace
+            private: @private
             color: color
 
           fs.writeFileSync path.join(@dir, filename), contents
@@ -61,7 +67,6 @@ class DeployinateConfigurator
     console.log ""
     console.log "etcdctl set /#{@namespace}/#{@project_name}/count 2"
     console.log "etcdctl set /#{@namespace}/#{@project_name}/host <domain name>"
-    console.log "etcdctl set /#{@namespace}/#{@project_name}/healthcheck_mode <http/tcp>"
     console.log "etcdctl set /#{@namespace}/#{@project_name}/blue/port <port>"
     console.log "etcdctl set /#{@namespace}/#{@project_name}/green/port <port>"
     console.log ""
