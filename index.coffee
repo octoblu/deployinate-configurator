@@ -21,7 +21,7 @@ class DeployinateConfigurator
 
     @namespace = commander.namespace ? 'octoblu'
     @dir = commander.dir ? '.systemd'
-    @private = commander.private?
+    @usePrivate = commander.private?
     @project_name = _.first commander.args
     @skipHealthcheck = commander.skipHealthcheck
     @skipRegister = commander.skipRegister
@@ -53,7 +53,7 @@ class DeployinateConfigurator
           contents = eco.render template,
             project_name: @project_name
             namespace: @namespace
-            private: @private
+            usePrivate: @usePrivate
             color: color
 
           fs.writeFileSync path.join(@dir, filename), contents

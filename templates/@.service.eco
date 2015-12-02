@@ -6,7 +6,7 @@ After=vulcand.service
 [Service]
 TimeoutStartSec=300
 Restart=always
-<% if private: %>
+<% if @usePrivate: %>
 ExecStartPre=/bin/sh -c '/usr/bin/docker login \
   --username $(/usr/bin/etcdctl get /docker/quay.io/username) \
   --password $(/usr/bin/etcdctl get /docker/quay.io/password) \
