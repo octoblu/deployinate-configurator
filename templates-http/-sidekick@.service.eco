@@ -6,7 +6,7 @@ TimeoutStartSec=30
 Restart=always
 ExecStart=/bin/sh -c "/usr/bin/etcdctl exec-watch \
   /<%= @namespace %>/<%= @project_name %>/restart \
-  -- sh -c \"(docker inspect --format='{{.Id}}' --type=image \$(etcdctl get /<%= @namespace %>/<%= @project_name %>/green/docker_url) \
+  -- sh -c \"(docker inspect --format='{{.Id}}' --type=image \$(etcdctl get /<%= @namespace %>/<%= @project_name %>/<%= @color %>/docker_url) \
                || docker pull \$(etcdctl get /<%= @namespace %>/<%= @project_name %>/docker_url)) \
                && docker stop \
                     --time=5 \
