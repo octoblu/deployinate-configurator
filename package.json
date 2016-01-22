@@ -1,11 +1,12 @@
 {
   "name": "deployinate-configurator",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "Configurate your Deployinate",
   "main": "index.js",
   "bin": {
     "deployinate-configurator": "./command.js",
     "deployinate-configurator-http": "./command-http.js",
+    "deployinate-configurator-worker": "./command-worker.js",
     "dplcfg": "./command.js",
     "dplcfg-http": "./command-http.js",
     "dplcfg-worker": "./command-worker.js"
