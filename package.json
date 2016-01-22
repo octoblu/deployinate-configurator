@@ -4,8 +4,8 @@
   "description": "Configurate your Deployinate",
   "main": "index.js",
   "bin": {
-    "deployinate-configurator": "./index.js",
-    "dplcfg": "./index.js"
+    "deployinate-configurator": "./command.js",
+    "dplcfg": "./command.js"
   },
   "scripts": {
     "test": "istanbul cover _mocha -- -R spec"
