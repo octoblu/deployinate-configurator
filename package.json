@@ -5,7 +5,9 @@
   "main": "index.js",
   "bin": {
     "deployinate-configurator": "./command.js",
-    "dplcfg": "./command.js"
+    "deployinate-configurator-http": "./command-http.js",
+    "dplcfg": "./command.js",
+    "dplcfg-http": "./command-http.js"
   },
   "scripts": {
     "test": "istanbul cover _mocha -- -R spec"
