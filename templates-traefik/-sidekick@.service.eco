@@ -1,0 +1,28 @@
+[Unit]
+Description=<%= @namespace %>-<%= @project_name %>-sidekick
+After=<%= @namespace %>-<%= @project_name %>@%i.service
+BindsTo=<%= @namespace %>-<%= @project_name %>@%i.service
+
+[Service]
+TimeoutStartSec=30
+Restart=always
+<% if @usePrivate: %>
+ExecStartPre=/bin/sh -c '/usr/bin/docker login \
+  --username $(/usr/bin/etcdctl get /docker/quay.io/username) \
+  --password $(/usr/bin/etcdctl get /docker/quay.io/password) \
+  --email $(/usr/bin/etcdctl get /docker/quay.io/email) \
+  quay.io'
+<% end %>
+ExecStart=/bin/sh -c "/usr/bin/etcdctl exec-watch \
+  /<%= @namespace %>/<%= @project_name %>/restart \
+  -- sh -c \"(docker inspect --format='{{.Id}}' --type=image \$(etcdctl get /<%= @namespace %>/<%= @project_name %>/docker_url) \
+               || docker pull \$(etcdctl get /<%= @namespace %>/<%= @project_name %>/docker_url)) \
+               && docker stop \
+                    --time=5 \
+                    <%= @namespace %>-<%= @project_name %>-%i\""
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+X-ConditionMachineOf=<%= @namespace %>-<%= @project_name %>@%i.service

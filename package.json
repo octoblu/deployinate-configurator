@@ -1,14 +1,16 @@
 {
   "name": "deployinate-configurator",
-  "version": "1.11.1",
+  "version": "1.12.0",
   "description": "Configurate your Deployinate",
   "main": "index.js",
   "bin": {
     "deployinate-configurator": "./command.js",
     "deployinate-configurator-http": "./command-http.js",
+    "deployinate-configurator-traefik": "./command-traefik.js",
     "deployinate-configurator-worker": "./command-worker.js",
     "dplcfg": "./command.js",
     "dplcfg-http": "./command-http.js",
+    "dplcfg-traefik": "./command-traefik.js",
     "dplcfg-worker": "./command-worker.js"
   },
   "scripts": {

@@ -1,0 +1,38 @@
+[Unit]
+Description=Register with vulcand for <%= @namespace %>-<%= @project_name %>
+After=<%= @namespace %>-<%= @project_name %>@%i.service
+BindsTo=<%= @namespace %>-<%= @project_name %>@%i.service
+
+[Service]
+TimeoutStartSec=300
+EnvironmentFile=/etc/environment
+RemainAfterExit=yes
+Restart=on-failure
+ExecStartPre=/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/instances/%i/port
+ExecStartPre=/bin/sh -c " \
+  etcdctl \
+    --no-sync \
+    --endpoint=$(/usr/bin/etcdctl get /<%= @namespace %>/etcd-major/endpoint) \
+    set \
+    /traefik/backends/<%= @namespace %>-<%= @project_name %>/servers/<%= @namespace %>-<%= @project_name %>-$(etcdctl get /cluster/name)-%i/weight \
+    10 \
+"
+ExecStart=/bin/sh -c " \
+  etcdctl \
+    --no-sync \
+    --endpoint=$(/usr/bin/etcdctl get /<%= @namespace %>/etcd-major/endpoint) \
+    set \
+    /traefik/backends/<%= @namespace %>-<%= @project_name %>/servers/<%= @namespace %>-<%= @project_name %>-$(etcdctl get /cluster/name)-%i/url \
+    http://${COREOS_PRIVATE_IPV4}:$(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/instances/%i/port) \
+"
+ExecStop=/bin/sh -c " \
+  etcdctl \
+    --no-sync \
+    --endpoint=$(/usr/bin/etcdctl get /<%= @namespace %>/etcd-major/endpoint) \
+    rm \
+    --recursive \
+    /traefik/backends/<%= @namespace %>-<%= @project_name %>/servers/<%= @namespace %>-<%= @project_name %>-$(etcdctl get /cluster/name)-%i \
+"
+
+[X-Fleet]
+X-ConditionMachineOf=<%= @namespace %>-<%= @project_name %>@%i.service
