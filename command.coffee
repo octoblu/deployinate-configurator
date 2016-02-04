@@ -9,6 +9,7 @@ class Command
       .version packageJSON.version
       .command 'http', 'generate files for an http service'
       .command 'traefik', 'generate files for a traefik service'
+      .command 'traefikworker', 'generate files for a traefikworker™ service'
       .command 'worker', 'generate files for a worker service'
       .parse process.argv
 
