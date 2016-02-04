@@ -77,4 +77,4 @@ class CommandTraefikWorker
       console.error colors.red arguments...
     process.exit 1
 
-new CommandTraefikworker().run()
+new CommandTraefikWorker().run()
