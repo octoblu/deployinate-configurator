@@ -32,7 +32,6 @@ ExecStart=/bin/sh -c "/usr/bin/docker run --rm \
   --name <%= @namespace %>-<%= @project_name %>-%i \
   --env-file /tmp/<%= @namespace %>-<%= @project_name %>-%i.env \
   --memory 512m \
-  --publish $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/instances/%i/port):80 \
   $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/docker_url) \
   || \
   /usr/bin/docker run --rm \
