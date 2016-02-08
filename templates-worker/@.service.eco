@@ -24,7 +24,6 @@ ExecStart=/bin/sh -c "/usr/bin/docker run --rm \
   --name <%= @namespace %>-<%= @project_name %>-%i \
   --env-file /tmp/<%= @namespace %>-<%= @project_name %>.env \
   --memory 512m \
-  -p $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/port):80 \
   $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/docker_url) \
 "
 ExecStop=/usr/bin/docker stop --time=5 <%= @namespace %>-<%= @project_name %>-%i
