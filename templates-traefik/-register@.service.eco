@@ -13,7 +13,7 @@ ExecStart=/bin/sh -c "/usr/bin/docker run --rm \
   --name <%= @namespace %>-<%= @project_name %>-register-%i \
   $(/usr/bin/etcdctl get /<%= @namespace %>/register-traefik/docker_url) \
     --etcd-uri $(/usr/bin/etcdctl get /<%= @namespace %>/etcd-major/endpoint) \
-    --server-key /traefik/backends/<%= @namespace %>-<%= @project_name %>-$(etcdctl get /cluster/name)/servers/<%= @namespace %>-<%= @project_name %>-$(etcdctl get /cluster/name)-%i \
+    --server-key /traefik/backends/<%= @namespace %>-<%= @project_name %>/servers/<%= @namespace %>-<%= @project_name %>-$(etcdctl get /cluster/name)-%i \
     --uri http://${COREOS_PRIVATE_IPV4}:$(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/instances/%i/port) \
 "
 ExecStop=/usr/bin/docker stop <%= @namespace %>-<%= @project_name %>-register-%i
