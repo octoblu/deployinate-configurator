@@ -1,7 +1,7 @@
 [Unit]
 Description=<%= @namespace %>-<%= @project_name %>
-Requires=<%= @namespace %>-<%= @project_name %>-register@%i.service
-Requires=<%= @namespace %>-<%= @project_name %>-sidekick@%i.service
+Wants=<%= @namespace %>-<%= @project_name %>-register@%i.service
+Wants=<%= @namespace %>-<%= @project_name %>-sidekick@%i.service
 
 [Service]
 TimeoutStartSec=300
