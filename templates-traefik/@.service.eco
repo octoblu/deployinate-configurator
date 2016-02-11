@@ -16,42 +16,32 @@ ExecStartPre=/bin/sh -c '/usr/bin/docker login \
   --email $(/usr/bin/etcdctl get /docker/quay.io/email) \
   quay.io'
 <% end %>
-ExecStartPre=/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/docker_url || /usr/bin/echo "etcd did not contain /<%= @namespace %>/<%= @project_name %>/docker_url" && exit 1
-ExecStartPre=-/usr/bin/docker rm --force <%= @namespace %>-<%= @project_name %>-env-%i <%= @namespace %>-<%= @project_name %>-%i <%= @namespace %>-<%= @project_name %>-port-%i <%= @namespace %>-<%= @project_name %>-tattle-%i <%= @namespace %>-<%= @project_name %>-tattle-env-%i
-ExecStartPre=/bin/sh -c "/usr/bin/docker run --rm \
-  --name <%= @namespace %>-<%= @project_name %>-port-%i \
-  --env ETCDCTL_PEERS=http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):2379 \
-  $(/usr/bin/etcdctl get /<%= @namespace %>/etcd-lock-port/docker_url) \
-    --etcd-uri=http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):2379 \
-    --registry /cluster/ports \
-    --key /<%= @namespace %>/<%= @project_name %>/instances/%i/port \
+ExecStartPre=/bin/bash -c " \
+  echo 'Writing kronk to /tmp' \
+  && /usr/bin/etcdctl get /<%= @namespace %>/kronk/service/start-pre > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start-pre \
+  && /usr/bin/etcdctl get /<%= @namespace %>/kronk/service/start > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start \
+  && /usr/bin/etcdctl get /<%= @namespace %>/kronk/service/stop > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-stop \
+  && chmod +x /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-* \
 "
-ExecStartPre=/bin/sh -c "/usr/bin/docker run --rm \
-  --name <%= @namespace %>-<%= @project_name %>-env-%i \
-  --env ETCDCTL_PEERS=http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):2379 \
-  quay.io/<%= @namespace %>/etcd-to-env /<%= @namespace %>/<%= @project_name %>/env > /tmp/<%= @namespace %>-<%= @project_name %>-%i.env \
+ExecStartPre=/bin/bash -c " \
+  /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start-pre \
+    <%= @namespace %>-<%= @project_name %> \
+    %i \
+    /<%= @namespace %>/<%= @project_name %>/env \
+    /<%= @namespace %>/<%= @project_name %>/docker_url \
 "
-ExecStartPre=/bin/sh -c "/usr/bin/docker run --rm \
-  --name <%= @namespace %>-<%= @project_name %>-tattle-env-%i \
-  --env ETCDCTL_PEERS=http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):2379 \
-  quay.io/<%= @namespace %>/etcd-to-env /<%= @namespace %>/tattle/env > /tmp/<%= @namespace %>-<%= @project_name %>-tattle-%i.env \
+ExecStart=/bin/bash -c " \
+  /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start \
+    <%= @namespace %>-<%= @project_name %> \
+    %i \
+    512m \
+    /<%= @namespace %>/<%= @project_name %>/docker_url \
 "
-ExecStart=/bin/sh -c "/usr/bin/docker run --rm \
-  --name <%= @namespace %>-<%= @project_name %>-%i \
-  --env-file /tmp/<%= @namespace %>-<%= @project_name %>-%i.env \
-  --memory 512m \
-  --publish $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/instances/%i/port):80 \
-  $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/docker_url) \
-  || \
-  /usr/bin/docker run --rm \
-    --name <%= @namespace %>-<%= @project_name %>-tattle-%i \
-    --env TATTLE_EXIT_CODE=$? \
-    --env TATTLE_SERVICE=<%= @namespace %>-<%= @project_name %>-%i \
-    --env TATTLE_APPLICATION=<%= @namespace %>-<%= @project_name %> \
-    --env-file /tmp/<%= @namespace %>-<%= @project_name %>-tattle-%i.env \
-    $(/usr/bin/etcdctl get /<%= @namespace %>/tattle/docker_url) \
+ExecStop=/bin/bash -c " \
+  /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-stop \
+    <%= @namespace %>-<%= @project_name %> \
+    %i \
 "
-ExecStop=-/usr/bin/docker stop --time=5 <%= @namespace %>-<%= @project_name %>-%i
 
 [Install]
 WantedBy=multi-user.target

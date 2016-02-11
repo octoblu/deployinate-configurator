@@ -1,6 +1,6 @@
 {
   "name": "deployinate-configurator",
-  "version": "1.16.3",
+  "version": "1.17.0",
   "description": "Configurate your Deployinate",
   "main": "index.js",
   "bin": {
