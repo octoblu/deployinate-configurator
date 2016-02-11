@@ -36,6 +36,7 @@ ExecStart=/bin/bash -c " \
     %i \
     512m \
     /<%= @namespace %>/<%= @project_name %>/docker_url \
+    /<%= @namespace %>/<%= @project_name %> \
 "
 ExecStop=/bin/bash -c " \
   /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-stop \
