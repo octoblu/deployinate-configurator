@@ -1,21 +1,34 @@
 [Unit]
-Description=Register with vulcand for <%= @namespace %>-<%= @project_name %>
+Description=<%= @namespace %>-<%= @project_name %>-register
 After=<%= @namespace %>-<%= @project_name %>@%i.service
-BindsTo=<%= @namespace %>-<%= @project_name %>@%i.service
 
 [Service]
 TimeoutStartSec=300
 EnvironmentFile=/etc/environment
-RemainAfterExit=yes
-Restart=on-failure
-ExecStartPre=/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/instances/%i/port
-ExecStart=/bin/sh -c "/usr/bin/docker run --rm \
-  --name <%= @namespace %>-<%= @project_name %>-register-%i \
-  $(/usr/bin/etcdctl get /<%= @namespace %>/register-traefik/docker_url) \
-    --etcd-uri $(/usr/bin/etcdctl get /<%= @namespace %>/etcd-major/endpoint) \
-    --server-key /traefik/backends/<%= @namespace %>-<%= @project_name %>/servers/<%= @namespace %>-<%= @project_name %>-$(etcdctl get /cluster/name)-%i \
-    --uri http://${COREOS_PRIVATE_IPV4}:$(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/instances/%i/port) \
+Restart=always
+ExecStartPre=/bin/bash -c " \
+  echo 'Writing kronk to /tmp' \
+  && /usr/bin/etcdctl get /<%= @namespace %>/kronk/register/start-pre > /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-start-pre \
+  && /usr/bin/etcdctl get /<%= @namespace %>/kronk/register/start > /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-start \
+  && /usr/bin/etcdctl get /<%= @namespace %>/kronk/register/stop > /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-stop \
+  && chmod +x /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-* \
 "
-ExecStop=/usr/bin/docker stop <%= @namespace %>-<%= @project_name %>-register-%i
+ExecStartPre=/bin/bash -c " \
+  /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-start-pre \
+    <%= @namespace %>-<%= @project_name %> \
+    %i \
+    /<%= @namespace %>/<%= @project_name %>/register-env \
+"
+ExecStart=/bin/sh -c " \
+  /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-start \
+    <%= @namespace %>-<%= @project_name %> \
+    %i \
+"
+ExecStop=/bin/sh -c " \
+  /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-stop \
+    <%= @namespace %>-<%= @project_name %> \
+    %i \
+"
+
 [X-Fleet]
 X-ConditionMachineOf=<%= @namespace %>-<%= @project_name %>@%i.service
