@@ -18,9 +18,9 @@ ExecStartPre=/bin/sh -c '/usr/bin/docker login \
 <% end %>
 ExecStartPre=/bin/bash -c " \
   echo 'Writing kronk to /tmp' \
-  && /usr/bin/etcdctl get /<%= @namespace %>/kronk/service/start-pre > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start-pre \
-  && /usr/bin/etcdctl get /<%= @namespace %>/kronk/service/start > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start \
-  && /usr/bin/etcdctl get /<%= @namespace %>/kronk/service/stop > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-stop \
+  && /usr/bin/etcdctl get /kronk/service/start-pre > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start-pre \
+  && /usr/bin/etcdctl get /kronk/service/start > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start \
+  && /usr/bin/etcdctl get /kronk/service/stop > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-stop \
   && chmod +x /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-* \
 "
 ExecStartPre=/bin/bash -c " \
