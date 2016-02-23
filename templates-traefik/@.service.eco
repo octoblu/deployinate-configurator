@@ -17,31 +17,33 @@ ExecStartPre=/bin/sh -c '/usr/bin/docker login \
   quay.io'
 <% end %>
 ExecStartPre=/bin/bash -c " \
-  echo 'Writing kronk to /tmp' \
-  && /usr/bin/etcdctl get /kronk/service/start-pre > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start-pre \
-  && /usr/bin/etcdctl get /kronk/service/start > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start \
-  && /usr/bin/etcdctl get /kronk/service/stop > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-stop \
-  && chmod +x /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-* \
+  echo 'Writing kronk' \
+  && mkdir -p /run/kronk/<%= @namespace %>-<%= @project_name %>-%i \
+  && /usr/bin/etcdctl get /kronk/wrapper/run > /run/kronk/<%= @namespace %>-<%= @project_name %>-%i/kronk-run \
+  && chmod +x /run/kronk/<%= @namespace %>-<%= @project_name %>-%i/kronk-run \
 "
 ExecStartPre=/bin/bash -c " \
-  /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start-pre \
-    <%= @namespace %>-<%= @project_name %> \
-    %i \
-    /<%= @namespace %>/<%= @project_name %>/env \
-    /<%= @namespace %>/<%= @project_name %>/docker_url \
+  /run/kronk/<%= @namespace %>-<%= @project_name %>-%i/kronk-run \
+    /kronk/service/start-pre <%= @namespace %>-<%= @project_name %>-%i \
+      <%= @namespace %>-<%= @project_name %> \
+      %i \
+      /<%= @namespace %>/<%= @project_name %>/env \
+      /<%= @namespace %>/<%= @project_name %>/docker_url \
 "
 ExecStart=/bin/bash -c " \
-  /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start \
-    <%= @namespace %>-<%= @project_name %> \
-    %i \
-    512m \
-    /<%= @namespace %>/<%= @project_name %>/docker_url \
-    /<%= @namespace %>/<%= @project_name %> \
+  /run/kronk/<%= @namespace %>-<%= @project_name %>-%i/kronk-run \
+    /kronk/service/start <%= @namespace %>-<%= @project_name %>-%i \
+      <%= @namespace %>-<%= @project_name %> \
+      %i \
+      512m \
+      /<%= @namespace %>/<%= @project_name %>/docker_url \
+      /<%= @namespace %>/<%= @project_name %> \
 "
 ExecStop=/bin/bash -c " \
-  /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-stop \
-    <%= @namespace %>-<%= @project_name %> \
-    %i \
+  /run/kronk/<%= @namespace %>-<%= @project_name %>-%i/kronk-run \
+    /kronk/service/stop <%= @namespace %>-<%= @project_name %>-%i \
+      <%= @namespace %>-<%= @project_name %> \
+      %i \
 "
 
 [Install]

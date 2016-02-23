@@ -7,27 +7,29 @@ TimeoutStartSec=300
 EnvironmentFile=/etc/environment
 Restart=always
 ExecStartPre=/bin/bash -c " \
-  echo 'Writing kronk to /tmp' \
-  && /usr/bin/etcdctl get /kronk/register/start-pre > /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-start-pre \
-  && /usr/bin/etcdctl get /kronk/register/start > /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-start \
-  && /usr/bin/etcdctl get /kronk/register/stop > /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-stop \
-  && chmod +x /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-* \
+  echo 'Writing kronk' \
+  && mkdir -p /run/kronk/<%= @namespace %>-<%= @project_name %>-register-%i \
+  && /usr/bin/etcdctl get /kronk/wrapper/run > /run/kronk/<%= @namespace %>-<%= @project_name %>-register-%i/kronk-run \
+  && chmod +x /run/kronk/<%= @namespace %>-<%= @project_name %>-register-%i/kronk-run \
 "
 ExecStartPre=/bin/bash -c " \
-  /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-start-pre \
-    <%= @namespace %>-<%= @project_name %> \
-    %i \
-    /<%= @namespace %>/<%= @project_name %>/register-env \
+  /run/kronk/<%= @namespace %>-<%= @project_name %>-register-%i/kronk-run \
+    /kronk/register/start-pre <%= @namespace %>-<%= @project_name %>-%i \
+      <%= @namespace %>-<%= @project_name %> \
+      %i \
+      /<%= @namespace %>/<%= @project_name %>/register-env \
 "
 ExecStart=/bin/sh -c " \
-  /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-start \
-    <%= @namespace %>-<%= @project_name %> \
-    %i \
+  /run/kronk/<%= @namespace %>-<%= @project_name %>-register-%i/kronk-run \
+    /kronk/register/start <%= @namespace %>-<%= @project_name %>-%i \
+      <%= @namespace %>-<%= @project_name %> \
+      %i \
 "
 ExecStop=/bin/sh -c " \
-  /tmp/<%= @namespace %>-<%= @project_name %>-register-%i-kronk-stop \
-    <%= @namespace %>-<%= @project_name %> \
-    %i \
+  /run/kronk/<%= @namespace %>-<%= @project_name %>-register-%i/kronk-run \
+    /kronk/register/stop <%= @namespace %>-<%= @project_name %>-%i \
+      <%= @namespace %>-<%= @project_name %> \
+      %i \
 "
 
 [X-Fleet]

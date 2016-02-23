@@ -14,13 +14,16 @@ ExecStartPre=/bin/sh -c '/usr/bin/docker login \
   quay.io'
 <% end %>
 ExecStartPre=/bin/bash -c " \
-  echo 'Writing kronk to /tmp' \
-  && /usr/bin/etcdctl get /kronk/sidekick/start > /tmp/<%= @namespace %>-<%= @project_name %>-sidekick-%i-kronk-start \
-  && chmod +x /tmp/<%= @namespace %>-<%= @project_name %>-sidekick-%i-kronk-* \
+  echo 'Writing kronk' \
+  && mkdir -p /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i \
+  && /usr/bin/etcdctl get /kronk/wrapper/run > /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i/kronk-run \
+  && chmod +x /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i/kronk-run \
 "
 ExecStart=/usr/bin/etcdctl exec-watch \
   /<%= @namespace %>/<%= @project_name %>/restart \
-  -- /tmp/<%= @namespace %>-<%= @project_name %>-sidekick-%i-kronk-start 10 /<%= @namespace %>/<%= @project_name %>/docker_url <%= @namespace %>-<%= @project_name %>-%i <%= @namespace %>-<%= @project_name %>-register-%i
+  -- /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i/kronk-run \
+    /kronk/sidekick/start <%= @namespace %>-<%= @project_name %>-sidekick-%i \
+    10 /<%= @namespace %>/<%= @project_name %>/docker_url <%= @namespace %>-<%= @project_name %>-%i <%= @namespace %>-<%= @project_name %>-register-%i
 
 [Install]
 WantedBy=multi-user.target

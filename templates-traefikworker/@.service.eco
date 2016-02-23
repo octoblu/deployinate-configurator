@@ -1,12 +1,9 @@
 [Unit]
-Description=<%= @namespace %>-<%= @project_name %>
-Wants=<%= @namespace %>-<%= @project_name %>-register@%i.service
-Wants=<%= @namespace %>-<%= @project_name %>-sidekick@%i.service
+Description=<%= @namespace %>-<%= @project_name %>-sidekick
+After=<%= @namespace %>-<%= @project_name %>@%i.service
 
 [Service]
-TimeoutStartSec=300
-StartLimitInterval=30
-StartLimitBurst=30
+TimeoutStartSec=30
 Restart=always
 
 <% if @usePrivate: %>
@@ -17,35 +14,19 @@ ExecStartPre=/bin/sh -c '/usr/bin/docker login \
   quay.io'
 <% end %>
 ExecStartPre=/bin/bash -c " \
-  echo 'Writing kronk to /tmp' \
-  && /usr/bin/etcdctl get /<%= @namespace %>/kronk/service/start-pre > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start-pre \
-  && /usr/bin/etcdctl get /<%= @namespace %>/kronk/service/start > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start \
-  && /usr/bin/etcdctl get /<%= @namespace %>/kronk/service/stop > /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-stop \
-  && chmod +x /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-* \
+  echo 'Writing kronk' \
+  && mkdir -p /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i \
+  && /usr/bin/etcdctl get /kronk/wrapper/run > /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i/kronk-run \
+  && chmod +x /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i/kronk-run \
 "
-ExecStartPre=/bin/bash -c " \
-  /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start-pre \
-    <%= @namespace %>-<%= @project_name %> \
-    %i \
-    /<%= @namespace %>/<%= @project_name %>/env \
-    /<%= @namespace %>/<%= @project_name %>/docker_url \
-"
-ExecStart=/bin/bash -c " \
-  /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-start \
-    <%= @namespace %>-<%= @project_name %> \
-    %i \
-    512m \
-    /<%= @namespace %>/<%= @project_name %>/docker_url \
-    /<%= @namespace %>/<%= @project_name %> \
-"
-ExecStop=/bin/bash -c " \
-  /tmp/<%= @namespace %>-<%= @project_name %>-%i-kronk-stop \
-    <%= @namespace %>-<%= @project_name %> \
-    %i \
-"
+ExecStart=/usr/bin/etcdctl exec-watch \
+  /<%= @namespace %>/<%= @project_name %>/restart \
+  -- /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i/kronk-run \
+    /kronk/sidekick/start <%= @namespace %>-<%= @project_name %>-sidekick-%i \
+    10 /<%= @namespace %>/<%= @project_name %>/docker_url <%= @namespace %>-<%= @project_name %>-%i <%= @namespace %>-<%= @project_name %>-register-%i
 
 [Install]
 WantedBy=multi-user.target
 
 [X-Fleet]
-MachineMetadata=Services=true
+X-ConditionMachineOf=<%= @namespace %>-<%= @project_name %>@%i.service
