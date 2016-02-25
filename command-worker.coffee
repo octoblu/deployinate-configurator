@@ -12,14 +12,14 @@ class CommandWorker
     commander
       .usage '[options] <project-name>'
       .version packageJSON.version
-      .option '--namespace <namespace>', 'Namespace, defaults to octoblu'
+      .option '--namespace <namespace>', 'Namespace, defaults to octoblu', 'octoblu'
       .option '-d, --dir <dir>', 'Output directory for templates'
       .option '-p, --private', 'Private repo, use docker login'
-      .option '--skip-sidekick', 'Skip the sidekick service templates'
       .option '--skip-service', 'Skip the service templates'
+      .option '--skip-sidekick', 'Skip the sidekick service templates'
       .parse process.argv
 
-    @namespace = commander.namespace ? 'octoblu'
+    @namespace = commander.namespace
     @dir = commander.dir
     @usePrivate = commander.private?
     @project_name = _.first commander.args
@@ -61,12 +61,9 @@ class CommandWorker
 
       @printEtcdInstructions()
 
-
   printEtcdInstructions: =>
     console.log ""
     console.log colors.bgWhite colors.black "ETCD INSTRUCTIONS"
-    console.log ""
-    console.log "etcdctl set /#{@namespace}/#{@project_name}/count 2"
     console.log ""
     console.log colors.bgRed colors.white "DON'T FORGET: SUBMIT YOUR SERVICE FILES TO FLEET"
     console.log ""

@@ -1,11 +1,11 @@
 [Unit]
-Description=<%= @namespace %>-<%= @project_name %>
-Wants=vulcand.service
-After=vulcand.service
+Description=<%= @namespace %>-<%= @project_name %>-sidekick
+After=<%= @namespace %>-<%= @project_name %>@%i.service
 
 [Service]
-TimeoutStartSec=300
+TimeoutStartSec=30
 Restart=always
+
 <% if @usePrivate: %>
 ExecStartPre=/bin/sh -c '/usr/bin/docker login \
   --username $(/usr/bin/etcdctl get /docker/quay.io/username) \
@@ -13,24 +13,20 @@ ExecStartPre=/bin/sh -c '/usr/bin/docker login \
   --email $(/usr/bin/etcdctl get /docker/quay.io/email) \
   quay.io'
 <% end %>
-ExecStartPre=/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/docker_url || /usr/bin/echo "etcd did not contain /<%= @namespace %>/<%= @project_name %>/docker_url" && exit 1
-ExecStartPre=-/usr/bin/docker rm --force <%= @namespace %>-<%= @project_name %>-env-%i <%= @namespace %>-<%= @project_name %>-%i
-ExecStartPre=/bin/sh -c "/usr/bin/docker run --rm \
-  --name <%= @namespace %>-<%= @project_name %>-env-%i \
-  -e ETCDCTL_PEERS=http://$(ifconfig docker0 | grep 'inet ' | awk '{print $2}'):2379 \
-  quay.io/octoblu/etcd-to-env /<%= @namespace %>/<%= @project_name %>/env > /tmp/<%= @namespace %>-<%= @project_name %>.env \
+ExecStartPre=/bin/bash -c " \
+  echo 'Writing kronk' \
+  && mkdir -p /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i \
+  && /usr/bin/etcdctl get /kronk/wrapper/run > /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i/kronk-run \
+  && chmod +x /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i/kronk-run \
 "
-ExecStart=/bin/sh -c "/usr/bin/docker run --rm \
-  --name <%= @namespace %>-<%= @project_name %>-%i \
-  --env-file /tmp/<%= @namespace %>-<%= @project_name %>.env \
-  --memory 512m \
-  $(/usr/bin/etcdctl get /<%= @namespace %>/<%= @project_name %>/docker_url) \
-"
-ExecStop=/usr/bin/docker stop --time=5 <%= @namespace %>-<%= @project_name %>-%i
+ExecStart=/usr/bin/etcdctl exec-watch \
+  /<%= @namespace %>/<%= @project_name %>/restart \
+  -- /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i/kronk-run \
+    /kronk/sidekick/start <%= @namespace %>-<%= @project_name %>-sidekick-%i \
+    10 /<%= @namespace %>/<%= @project_name %>/docker_url <%= @namespace %>-<%= @project_name %>-%i <%= @namespace %>-<%= @project_name %>-register-%i
 
 [Install]
 WantedBy=multi-user.target
 
 [X-Fleet]
-Conflicts=<%= @namespace %>-<%= @project_name %>@*.service
-MachineMetadata=Services=true
+X-ConditionMachineOf=<%= @namespace %>-<%= @project_name %>@%i.service

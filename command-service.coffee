@@ -7,7 +7,7 @@ colors = require 'colors'
 commander = require 'commander'
 packageJSON = require './package.json'
 
-class CommandTraefikWorker
+class CommandService
   parseOptions: =>
     commander
       .usage '[options] <project-name>'
@@ -15,6 +15,7 @@ class CommandTraefikWorker
       .option '--namespace <namespace>', 'Namespace, defaults to octoblu', 'octoblu'
       .option '-d, --dir <dir>', 'Output directory for templates'
       .option '-p, --private', 'Private repo, use docker login'
+      .option '--skip-register', 'Skip the register service templates'
       .option '--skip-service', 'Skip the service templates'
       .option '--skip-sidekick', 'Skip the sidekick service templates'
       .parse process.argv
@@ -41,10 +42,11 @@ class CommandTraefikWorker
     fs.mkdirpSync @dir
 
     templateNames = ['some-dummy-filename']
+    templateNames.push '-register@.service' unless @skipRegister == true
     templateNames.push '-sidekick@.service' unless @skipSidekick == true
     templateNames.push '@.service' unless @skipService == true
 
-    glob path.join(__dirname, "templates-traefikworker/**/{#{templateNames.join(',')}}.eco"), (error, files) =>
+    glob path.join(__dirname, "templates-service/**/{#{templateNames.join(',')}}.eco"), (error, files) =>
       return @die error if error?
       _.each files, (file) =>
         outputFilename = path.basename file.replace('.eco', '')
@@ -77,4 +79,4 @@ class CommandTraefikWorker
       console.error colors.red arguments...
     process.exit 1
 
-new CommandTraefikWorker().run()
+new CommandService().run()
