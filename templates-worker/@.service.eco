@@ -4,6 +4,7 @@ Wants=<%= @namespace %>-<%= @project_name %>-register@%i.service
 Wants=<%= @namespace %>-<%= @project_name %>-sidekick@%i.service
 
 [Service]
+EnvironmentFile=/etc/environment
 TimeoutStartSec=300
 StartLimitInterval=30
 StartLimitBurst=30

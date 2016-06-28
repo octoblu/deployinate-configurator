@@ -3,9 +3,10 @@ Description=<%= @namespace %>-<%= @project_name %>-register
 After=<%= @namespace %>-<%= @project_name %>@%i.service
 
 [Service]
-TimeoutStartSec=300
 EnvironmentFile=/etc/environment
+TimeoutStartSec=300
 Restart=always
+
 ExecStartPre=/bin/bash -c " \
   echo 'Writing kronk' \
   && mkdir -p /run/kronk/<%= @namespace %>-<%= @project_name %>-register-%i \

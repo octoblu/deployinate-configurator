@@ -3,6 +3,7 @@ Description=<%= @namespace %>-<%= @project_name %>-sidekick
 After=<%= @namespace %>-<%= @project_name %>@%i.service
 
 [Service]
+EnvironmentFile=/etc/environment
 TimeoutStartSec=30
 Restart=always
 
