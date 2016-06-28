@@ -35,7 +35,6 @@ ExecStart=/bin/bash -c " \
     /kronk/service/start <%= @namespace %>-<%= @project_name %>-%i \
       <%= @namespace %>-<%= @project_name %> \
       %i \
-      512m \
       /<%= @namespace %>/<%= @project_name %>/docker_url \
       /<%= @namespace %>/<%= @project_name %> \
 "
