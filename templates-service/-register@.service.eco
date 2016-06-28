@@ -16,19 +16,22 @@ ExecStartPre=/bin/bash -c " \
 ExecStartPre=/bin/bash -c " \
   /run/kronk/<%= @namespace %>-<%= @project_name %>-register-%i/kronk-run \
     /kronk/register/start-pre <%= @namespace %>-<%= @project_name %>-%i \
-      <%= @namespace %>-<%= @project_name %> \
+      <%= @namespace %> \
+      <%= @project_name %> \
       %i \
 "
 ExecStart=/bin/sh -c " \
   /run/kronk/<%= @namespace %>-<%= @project_name %>-register-%i/kronk-run \
     /kronk/register/start <%= @namespace %>-<%= @project_name %>-%i \
-      <%= @namespace %>-<%= @project_name %> \
+      <%= @namespace %> \
+      <%= @project_name %> \
       %i \
 "
 ExecStop=/bin/sh -c " \
   /run/kronk/<%= @namespace %>-<%= @project_name %>-register-%i/kronk-run \
     /kronk/register/stop <%= @namespace %>-<%= @project_name %>-%i \
-      <%= @namespace %>-<%= @project_name %> \
+      <%= @namespace %> \
+      <%= @project_name %> \
       %i \
 "
 

@@ -16,7 +16,8 @@ ExecStartPre=/bin/bash -c " \
 ExecStart=/bin/sh -c " \
   /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i/kronk-run \
     /kronk/sidekick/start <%= @namespace %>-<%= @project_name %>-%i \
-    <%= @namespace %>-<%= @project_name %> \
+    <%= @namespace %> \
+    <%= @project_name %> \
     %i \
 "
 
