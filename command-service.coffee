@@ -14,7 +14,6 @@ class CommandService
       .version packageJSON.version
       .option '--namespace <namespace>', 'Namespace, defaults to octoblu', 'octoblu'
       .option '-d, --dir <dir>', 'Output directory for templates'
-      .option '-p, --private', 'Private repo, use docker login'
       .option '--skip-register', 'Skip the register service templates'
       .option '--skip-service', 'Skip the service templates'
       .option '--skip-sidekick', 'Skip the sidekick service templates'
@@ -22,7 +21,6 @@ class CommandService
 
     @namespace = commander.namespace
     @dir = commander.dir
-    @usePrivate = commander.private?
     @project_name = _.first commander.args
     @skipHealthcheck = commander.skipHealthcheck
     @skipRegister = commander.skipRegister
@@ -57,7 +55,6 @@ class CommandService
         contents = eco.render template,
           project_name: @project_name
           namespace: @namespace
-          usePrivate: @usePrivate
 
         fs.writeFileSync path.join(@dir, filename), contents
 

@@ -6,13 +6,6 @@ After=<%= @namespace %>-<%= @project_name %>@%i.service
 TimeoutStartSec=30
 Restart=always
 
-<% if @usePrivate: %>
-ExecStartPre=/bin/sh -c '/usr/bin/docker login \
-  --username $(/usr/bin/etcdctl get /docker/quay.io/username) \
-  --password $(/usr/bin/etcdctl get /docker/quay.io/password) \
-  --email $(/usr/bin/etcdctl get /docker/quay.io/email) \
-  quay.io'
-<% end %>
 ExecStartPre=/bin/bash -c " \
   echo 'Writing kronk' \
   && mkdir -p /run/kronk/<%= @namespace %>-<%= @project_name %>-sidekick-%i \
@@ -24,7 +17,6 @@ ExecStart=/bin/sh -c " \
     /kronk/sidekick/start <%= @namespace %>-<%= @project_name %>-%i \
     <%= @namespace %>-<%= @project_name %> \
     %i \
-    /<%= @namespace %>/<%= @project_name %>/docker_url \
 "
 
 [Install]

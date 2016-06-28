@@ -9,13 +9,6 @@ StartLimitInterval=30
 StartLimitBurst=30
 Restart=always
 
-<% if @usePrivate: %>
-ExecStartPre=/bin/sh -c '/usr/bin/docker login \
-  --username $(/usr/bin/etcdctl get /docker/quay.io/username) \
-  --password $(/usr/bin/etcdctl get /docker/quay.io/password) \
-  --email $(/usr/bin/etcdctl get /docker/quay.io/email) \
-  quay.io'
-<% end %>
 ExecStartPre=/bin/bash -c " \
   echo 'Writing kronk' \
   && mkdir -p /run/kronk/<%= @namespace %>-<%= @project_name %>-%i \
@@ -27,16 +20,12 @@ ExecStartPre=/bin/bash -c " \
     /kronk/service/start-pre <%= @namespace %>-<%= @project_name %>-%i \
       <%= @namespace %>-<%= @project_name %> \
       %i \
-      /<%= @namespace %>/<%= @project_name %>/env \
-      /<%= @namespace %>/<%= @project_name %>/docker_url \
 "
 ExecStart=/bin/bash -c " \
   /run/kronk/<%= @namespace %>-<%= @project_name %>-%i/kronk-run \
     /kronk/service/start <%= @namespace %>-<%= @project_name %>-%i \
       <%= @namespace %>-<%= @project_name %> \
       %i \
-      /<%= @namespace %>/<%= @project_name %>/docker_url \
-      /<%= @namespace %>/<%= @project_name %> \
 "
 ExecStop=/bin/bash -c " \
   /run/kronk/<%= @namespace %>-<%= @project_name %>-%i/kronk-run \

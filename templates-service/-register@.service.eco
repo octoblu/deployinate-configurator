@@ -17,7 +17,6 @@ ExecStartPre=/bin/bash -c " \
     /kronk/register/start-pre <%= @namespace %>-<%= @project_name %>-%i \
       <%= @namespace %>-<%= @project_name %> \
       %i \
-      /<%= @namespace %>/<%= @project_name %>/register-env \
 "
 ExecStart=/bin/sh -c " \
   /run/kronk/<%= @namespace %>-<%= @project_name %>-register-%i/kronk-run \
