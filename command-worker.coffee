@@ -14,7 +14,6 @@ class CommandWorker
       .version packageJSON.version
       .option '--namespace <namespace>', 'Namespace, defaults to octoblu', 'octoblu'
       .option '-d, --dir <dir>', 'Output directory for templates'
-      .option '-p, --private', 'Private repo, use docker login'
       .option '--skip-service', 'Skip the service templates'
       .option '--skip-sidekick', 'Skip the sidekick service templates'
       .parse process.argv
